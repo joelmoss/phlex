@@ -9,8 +9,17 @@ module Phlex
 				end
 
 				visit_method def visit_vcall(node)
-					@optimized_something = Optimizers::VCall.new(node,
-						compiler: @compiler).call
+					if Optimizers::VCall.new(node, compiler: @compiler).call
+						@optimized_something = true
+					end
+
+					super
+				end
+
+				visit_method def visit_fcall(node)
+					if Optimizers::FCall.new(node, compiler: @compiler).call
+						@optimized_something = true
+					end
 
 					super
 				end

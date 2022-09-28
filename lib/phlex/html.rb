@@ -142,14 +142,7 @@ module Phlex
             end
           else
             if content
-              case content
-              when String
-                @_target << "<#{tag}>" << CGI.escape_html(content) << "</#{tag}>"
-              when Symbol
-                @_target << "<#{tag}>" << CGI.escape_html(content.name) << "</#{tag}>"
-              else
-                @_target << "<#{tag}>" << CGI.escape_html(content.to_s) << "</#{tag}>"
-              end
+              @_target << "<#{tag}>" << _output(content) << "</#{tag}>"
             elsif block_given?
               @_target << "<#{tag}>"
               yield_content(&block)
