@@ -102,6 +102,29 @@ module Phlex
 			nil
 		end
 
+		def mix(*args)
+			args.each_with_object({}) do |n, sum|
+				sum.merge!(n) do |_key, old, new|
+					case new
+					when Hash
+						old.is_a?(Hash) ? mix(old, new) : new
+					when Array
+						old.is_a?(Array) ? (old + new) : new
+					when String
+						old.is_a?(String) ? "#{old} #{new}" : new
+					else
+						new
+					end
+				end
+
+				n.each do |k, v|
+					if k.end_with?("!")
+						sum[k[0..-2].to_sym] = v
+					end
+				end
+			end
+		end
+
 		def html_safe?
 			true
 		end
