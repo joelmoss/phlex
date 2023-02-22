@@ -289,15 +289,23 @@ module Phlex
 			nil
 		end
 
-		# @api private
-		private def __attributes__(**attributes)
-			__final_attributes__(**attributes).tap do |buffer|
-				Phlex::ATTRIBUTE_CACHE[attributes.hash] = buffer.freeze
+		private def __fetch_attributes__(**attributes)
+			key = attributes.hash
+			Phlex::ATTRIBUTE_CACHE.fetch(key) do
+				attributes = resolve_attributes(**attributes) if respond_to?(:resolve_attributes)
+				__attributes__(key, **attributes)
 			end
 		end
 
 		# @api private
-		private def __final_attributes__(**attributes)
+		private def __attributes__(key, **attributes)
+			__final_attributes__(key, **attributes).tap do |buffer|
+				Phlex::ATTRIBUTE_CACHE[key] = buffer.freeze
+			end
+		end
+
+		# @api private
+		private def __final_attributes__(_key, **attributes)
 			if attributes[:href]&.start_with?(/\s*javascript:/)
 				attributes.delete(:href)
 			end
